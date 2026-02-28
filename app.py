@@ -11,6 +11,75 @@ import requests
 # Load environment variables
 load_dotenv()
 
+def inject_custom_css():
+    st.markdown("""
+    <style>
+    /* Main background */
+    .stApp {
+        background: radial-gradient(circle at top left, #1a1a2e, #16213e, #0f3460);
+        color: #ffffff;
+    }
+
+    /* Glass container */
+    .glass-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* Professional Headers */
+    h1, h2, h3 {
+        font-family: 'Inter', sans-serif;
+        font-weight: 700 !important;
+        letter-spacing: -0.5px;
+        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Inputs and Selectboxes */
+    .stTextArea textarea, .stSelectbox [data-baseweb="select"] {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+    }
+
+    /* Buttons */
+    .stButton>button {
+        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.6rem 2rem !important;
+        font-weight: 600 !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+    }
+
+    /* Sidebar info */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Center aligning main content */
+    .main .block-container {
+        max-width: 800px;
+        padding-top: 2rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Configure Gemini API
 API_KEY = os.getenv("GEMINI_API_KEY")
 if API_KEY:
@@ -107,12 +176,20 @@ def convert_text_to_speech(text, lang_code):
 
 def main():
     """Wrapper Web-Application using Streamlit"""
-    st.set_page_config(page_title="Language Translator & TTS", page_icon="🌐", layout="centered")
+    st.set_page_config(page_title="Translate & Speak", page_icon="🌐", layout="wide")
+    inject_custom_css()
     
-    st.title("🌐 Kassem's Capstone Project: Translate & Speak")
-    st.subheader("Translate text or files to multiple languages and listen to the result!")
+    # Custom Header
+    st.markdown('<div class="main-header">', unsafe_allow_html=True)
+    st.title("🌐 Translate & Speak")
+    st.markdown('<p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.8;">Orchestrate your global communication with AI-powered translation and speech synthesis.</p>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    input_method = st.radio("Choose Input Method", ("Enter Text", "Upload File"))
+    # Main Glass Container
+    with st.container():
+        st.markdown('<div class="glass-container">', unsafe_allow_html=True)
+        
+        input_method = st.radio("Input Method", ("Enter Text", "Upload File"), horizontal=True)
     
     source_text = ""
     
@@ -140,6 +217,8 @@ def main():
                 st.success("File successfully extracted!")
                 with st.expander("Show Extracted Text"):
                     st.text(source_text[:1000] + ("..." if len(source_text) > 1000 else ""))
+        
+        st.markdown("---")
 
     # Create a nice layout for selection
     col1, col2 = st.columns([2, 1])
@@ -180,6 +259,8 @@ def main():
                     file_name="translated_speech.mp3",
                     mime="audio/mp3"
                 )
+        
+        st.markdown('</div>', unsafe_allow_html=True) # Close glass-container
 
 if __name__ == "__main__":
     main()
