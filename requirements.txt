@@ -6,3 +6,9 @@ PyPDF2
 gTTS
 openpyxl
 requests
+langchain
+langchain-google-genai
+langchain-community
+langchain-text-splitters
+chromadb
+tiktoken
